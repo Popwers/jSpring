@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"target": "ES5",
+    	"module": "ESNext",
+		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+
+		/* Linting */
+		"strict": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noFallthroughCasesInSwitch": true,
+		"allowJs": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+
+    	/* Module Resolution */
+		"moduleResolution": "bundler",
+    	"allowImportingTsExtensions": true,
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+   		"noEmit": true,
+		"esModuleInterop": true,
+		"incremental": true,
+	},
+  	"include": ["src"],
+	"exclude": ["node_modules"]
+}

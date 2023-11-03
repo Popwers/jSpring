@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>jSpring Demo</title>
+		<style>
+			.point {
+				position: relative;
+				background: black;
+				width: 40px;
+				height: 40px;
+				border-radius: 20px;
+			}
+
+			.controllers {
+				width: fit-content;
+				height: 100px;
+				background: #eee;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: flex-start;
+				padding: 10px;
+				border-radius: 5px;
+				box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.15);
+				margin-bottom: 30px;
+			}
+
+			.control {
+				display: flex;
+				flex-direction: row;
+				align-items: flex-start;
+			}
+
+			.control label {
+				margin-right: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="controllers">
+			<div class="control">
+				<label for="stiffness">stiffness</label>
+				<input id="stiffness" type="range" value="0.5" min="0.1" max="100" step="0.5" />
+			</div>
+			<div class="control">
+				<label for="damping">damping</label>
+				<input id="damping" type="range" value="1" min="0.1" max="100" step="0.1" />
+			</div>
+			<div class="control">
+				<label for="mass">mass</label>
+				<input id="mass" type="range" value="10" min="1" max="100" step="1" />
+			</div>
+		</div>
+		<div class="point"></div>
+		<script>
+			const point = document.querySelector('.point');
+			const stiffness = document.querySelector('#stiffness');
+			const damping = document.querySelector('#damping');
+			const mass = document.querySelector('#mass');
+
+			stiffness.addEventListener('input', () => {
+				animate({
+					target: point,
+					propriety: 'left',
+					from: 0,
+					to: 300,
+					params: { stiffness: stiffness.value, damping: damping.value, mass: mass.value },
+				});
+			});
+
+			damping.addEventListener('input', () => {
+				animate({
+					target: point,
+					propriety: 'left',
+					from: 0,
+					to: 300,
+					params: { stiffness: stiffness.value, damping: damping.value, mass: mass.value },
+				});
+			});
+
+			mass.addEventListener('input', () => {
+				animate({
+					target: point,
+					propriety: 'left',
+					from: 0,
+					to: 300,
+					params: { stiffness: stiffness.value, damping: damping.value, mass: mass.value },
+				});
+			});
+
+			////////////////////////////////////////////////////////////////////////////////
+
+			const animate = ({
+				target,
+				propriety,
+				from,
+				to,
+				params = { stiffness, damping, mass, velocity },
+				excepted_frames_rate = 60,
+			}) => {
+				const thereYet = (position, destination, velocity, errorMargin = 0.001) =>
+					Math.abs(position - destination) < errorMargin && Math.abs(velocity) < errorMargin;
+
+				const DEFAULT_CONFIG = { stiffness: 0.5, damping: 1, mass: 10, velocity: 0 };
+				const {
+					stiffness = DEFAULT_CONFIG.stiffness,
+					damping = DEFAULT_CONFIG.damping,
+					mass = DEFAULT_CONFIG.mass,
+				} = params;
+
+				const frames_per_second = excepted_frames_rate || 60;
+				const frame_interval = 1000 / frames_per_second;
+
+				let previousTime = performance.now();
+				let delta_time_multiplier = 1;
+				let delta_time = 0;
+
+				let position = from;
+				let velocity = params.velocity ?? DEFAULT_CONFIG.velocity;
+
+				const animationLoop = currentTime => {
+					const endAnimation = thereYet(position, to, velocity);
+					if (endAnimation) {
+						position = to;
+						velocity = 0;
+					} else {
+						// Calculate delta time to prevent from speed variation if the frame rate is not stable
+						delta_time = currentTime - previousTime;
+						delta_time_multiplier = delta_time / frame_interval;
+
+						// Calculate acceleration
+						const force = (position - to) * -stiffness;
+						const damper = -damping * velocity;
+						const acceleration = (force + damper) / mass;
+						velocity += acceleration * delta_time_multiplier;
+						position += velocity * delta_time_multiplier;
+
+						// Save the current time for the next frame
+						previousTime = currentTime;
+					}
+
+					// Update the propriety of the target
+					target.style.setProperty(propriety, position + 'px');
+
+					// If the animation is not finished, call the next frame
+					!endAnimation && requestAnimationFrame(animationLoop);
+				};
+				requestAnimationFrame(animationLoop);
+			};
+
+			////////////////////////////////////////////////////////////////////////////////
+
+			animate({
+				target: point,
+				propriety: 'left',
+				from: 0,
+				to: 300,
+				params: { stiffness: stiffness.value, damping: damping.value, mass: mass.value },
+			});
+		</script>
+	</body>
+</html>
