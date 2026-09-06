@@ -1,33 +1,66 @@
 {
-	"name": "jspring",
-	"version": "0.0.1",
-	"description": "A spring physics engine for JavaScript",
-	"license": "MIT",
-	"author": {
-		"name": "Lionel Bataille",
-		"url": "https://mystudio.digital/"
-	},
-	"repository": "Popwers/jSpring",
-	"main": "dist/jSpring.js",
-	"browser": "dist/jSpring.js",
-	"module": "dist/jSpring.esm.js",
-	"keywords": [
-		"javascript",
-		"animation",
-		"spring",
-		"physics"
-	],
-	"files": [
-		"dist"
-	],
-	"type": "module",
-	"scripts": {
-		"dev": "vite",
-		"build": "tsc && vite build",
-		"preview": "vite preview"
-	},
-	"devDependencies": {
-		"typescript": "^5.2.2",
-		"vite": "^4.4.5"
-	}
+  "name": "jspring",
+  "version": "0.0.1",
+  "description": "A spring physics engine for JavaScript",
+  "license": "MIT",
+  "author": {
+    "name": "Lionel Bataille",
+    "url": "https://mystudio.digital/"
+  },
+  "repository": "Popwers/jSpring",
+  "main": "dist/jSpring.js",
+  "browser": "dist/jSpring.js",
+  "module": "dist/jSpring.esm.js",
+  "keywords": [
+    "javascript",
+    "animation",
+    "spring",
+    "physics"
+  ],
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^4.4.5"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "repositoryUrl": "https://github.com/Popwers/jSpring.git",
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      [
+        "@semantic-release/npm",
+        {
+          "npmPublish": false
+        }
+      ],
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "CHANGELOG.md",
+            "package.json"
+          ],
+          "message": "chore(release): ${nextRelease.version} [skip ci]"
+        }
+      ],
+      [
+        "@semantic-release/github",
+        {
+          "releaseBody": "Release ${nextRelease.version}"
+        }
+      ]
+    ]
+  }
 }
