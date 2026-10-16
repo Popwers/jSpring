@@ -47,21 +47,17 @@ export const animate = ({
             delta_time = currentTime - previousTime;
             delta_time_multiplier = delta_time / frame_interval;
 
-            // Calculate acceleration
             const force = (position - to) * -stiffness;
             const damper = -damping * velocity_;
             const acceleration = (force + damper) / mass;
             velocity_ += acceleration * delta_time_multiplier;
             position += velocity_ * delta_time_multiplier;
 
-            // Save the current time for the next frame
             previousTime = currentTime;
         }
 
-        // Update the propriety of the target
         target.style.setProperty(propriety, position + 'px');
 
-        // If the animation is not finished, call the next frame
         !endAnimation && requestAnimationFrame(animationLoop);
     };
     requestAnimationFrame(animationLoop);
