@@ -23,7 +23,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "bun check --no-script && vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
