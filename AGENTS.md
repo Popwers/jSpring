@@ -20,4 +20,4 @@ bun run dev
 
 ## Invariants
 
-The call shape is `animate({ target, propriety, from, to, params })`. `propriety` is the CSS property name. Values are written as `px`.
+The call shape is `animate({ target, propriety, from, to, params })`. `propriety` is the CSS property name. Values are written as `px`. `animate` returns a cancel function and throws a `RangeError` on invalid parameters.

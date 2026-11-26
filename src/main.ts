@@ -14,6 +14,17 @@ interface AnimateParams {
     excepted_frames_rate?: number;
 };
 
+const isFiniteNumber = (value: number) => typeof value === 'number' && Number.isFinite(value);
+
+const assertValidAnimation = (from: number, to: number, params: Required<SpringParams>) => {
+    const { stiffness, damping, mass, velocity } = params;
+    if (!isFiniteNumber(from) || !isFiniteNumber(to)) throw new RangeError('jSpring: from and to must be finite numbers');
+    if (!isFiniteNumber(velocity)) throw new RangeError('jSpring: velocity must be a finite number');
+    if (!isFiniteNumber(stiffness) || stiffness <= 0) throw new RangeError('jSpring: stiffness must be greater than 0');
+    if (!isFiniteNumber(damping) || damping < 0) throw new RangeError('jSpring: damping must be 0 or more');
+    if (!isFiniteNumber(mass) || mass <= 0) throw new RangeError('jSpring: mass must be greater than 0');
+};
+
 export const animate = ({
     target,
     propriety,
@@ -21,11 +32,15 @@ export const animate = ({
     to,
     params = {},
     excepted_frames_rate = 60,
-}: AnimateParams) => {
+}: AnimateParams): (() => void) => {
     const thereYet = (position: number, destination: number, velocity: number, errorMargin: number = 0.001) =>
         Math.abs(position - destination) < errorMargin && Math.abs(velocity) < errorMargin;
 
-    const { stiffness = 0.5, damping = 1, mass = 10, velocity = 0 } = params;
+    const stiffness = Number(params.stiffness ?? 0.5);
+    const damping = Number(params.damping ?? 1);
+    const mass = Number(params.mass ?? 10);
+    const velocity = Number(params.velocity ?? 0);
+    assertValidAnimation(from, to, { stiffness, damping, mass, velocity });
 
     const frames_per_second = excepted_frames_rate || 60;
     const frame_interval = 1000 / frames_per_second;
@@ -37,7 +52,12 @@ export const animate = ({
     let position: number = from;
     let velocity_: number = velocity;
 
+    let frameId = 0;
+    let cancelled = false;
+
     const animationLoop = (currentTime: number) => {
+        if (cancelled) return;
+
         const endAnimation = thereYet(position, to, velocity_);
         if (endAnimation) {
             position = to;
@@ -56,9 +76,20 @@ export const animate = ({
             previousTime = currentTime;
         }
 
+        const diverged = !Number.isFinite(position) || !Number.isFinite(velocity_);
+        if (diverged) {
+            position = to;
+            velocity_ = 0;
+        }
+
         target.style.setProperty(propriety, position + 'px');
 
-        !endAnimation && requestAnimationFrame(animationLoop);
+        if (!endAnimation && !diverged) frameId = requestAnimationFrame(animationLoop);
     };
-    requestAnimationFrame(animationLoop);
+    frameId = requestAnimationFrame(animationLoop);
+
+    return () => {
+        cancelled = true;
+        cancelAnimationFrame(frameId);
+    };
 };
