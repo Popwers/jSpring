@@ -6,14 +6,14 @@ Spring physics helper for a CSS length on a DOM node. Drag the sliders in the de
 
 Open `index.html` in a browser. The demo script lives in that file.
 
-To use the Vite 4 setup that is already in `package.json`:
+To use the Vite 8 setup that is already in `package.json`:
 
 ```bash
 bun install
 bun run dev
 ```
 
-`bun.lockb` is the lockfile.
+`bun.lock` is the lockfile.
 
 ## API
 

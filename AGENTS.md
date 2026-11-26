@@ -6,12 +6,12 @@ Spring physics helper that drives a CSS length on a DOM node. The working demo i
 
 - `index.html` is the demo. Open it directly or through Vite.
 - `src/main.ts` is the TypeScript source. `tsconfig.json` has `noEmit: true`.
-- `package.json` scripts use Vite 4 (`dev`, `build`, `preview`). `bun.lockb` is the lockfile.
+- `package.json` scripts use Vite 8 (`dev`, `build`, `preview`), which needs Node 20.19 or later. `bun.lock` is the lockfile.
 - There is no published `dist/` in this tree.
 
 ## Commands
 
-Scripts are Vite 4. Run `bun install` then `bun run dev`.
+Scripts are Vite 8. Run `bun install` then `bun run dev`.
 
 ```bash
 bun install
