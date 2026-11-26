@@ -3,7 +3,6 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
 		<title>jSpring Demo</title>
 		<style>
 			.point {
@@ -61,35 +60,25 @@
 			const damping = document.querySelector('#damping');
 			const mass = document.querySelector('#mass');
 
-			stiffness.addEventListener('input', () => {
-				animate({
-					target: point,
-					propriety: 'left',
-					from: 0,
-					to: 300,
-					params: { stiffness: stiffness.value, damping: damping.value, mass: mass.value },
-				});
-			});
+			const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+			let cancelPrevious = () => {};
 
-			damping.addEventListener('input', () => {
-				animate({
+			const run = () => {
+				cancelPrevious();
+				if (reducedMotion.matches) {
+					point.style.setProperty('left', '300px');
+					return;
+				}
+				cancelPrevious = animate({
 					target: point,
 					propriety: 'left',
 					from: 0,
 					to: 300,
 					params: { stiffness: stiffness.value, damping: damping.value, mass: mass.value },
 				});
-			});
+			};
 
-			mass.addEventListener('input', () => {
-				animate({
-					target: point,
-					propriety: 'left',
-					from: 0,
-					to: 300,
-					params: { stiffness: stiffness.value, damping: damping.value, mass: mass.value },
-				});
-			});
+			[stiffness, damping, mass].forEach(input => input.addEventListener('input', run));
 
 			const animate = ({
 				target,
@@ -119,7 +108,12 @@
 				let position = from;
 				let velocity = params.velocity ?? DEFAULT_CONFIG.velocity;
 
+				let frameId = 0;
+				let cancelled = false;
+
 				const animationLoop = currentTime => {
+					if (cancelled) return;
+
 					const endAnimation = thereYet(position, to, velocity);
 					if (endAnimation) {
 						position = to;
@@ -140,18 +134,16 @@
 
 					target.style.setProperty(propriety, position + 'px');
 
-					!endAnimation && requestAnimationFrame(animationLoop);
+					if (!endAnimation) frameId = requestAnimationFrame(animationLoop);
 				};
-				requestAnimationFrame(animationLoop);
+				frameId = requestAnimationFrame(animationLoop);
+				return () => {
+					cancelled = true;
+					cancelAnimationFrame(frameId);
+				};
 			};
 
-			animate({
-				target: point,
-				propriety: 'left',
-				from: 0,
-				to: 300,
-				params: { stiffness: stiffness.value, damping: damping.value, mass: mass.value },
-			});
+			run();
 		</script>
 	</body>
 </html>
